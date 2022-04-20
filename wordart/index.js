@@ -131,7 +131,7 @@ function createTextTexture(fontSize, fontColor, repeat = false) {
 
   ctx.save();
   ctx.translate(0.5 * sz, 0.5 * sz);
-  ctx.rotate(Math.PI * -0.15);
+  ctx.rotate(Math.PI * 0.1);
   ctx.translate(-0.5 * sz, -0.5 * sz);
   ctx.fillStyle = "#ddd";
   ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
@@ -142,9 +142,9 @@ function createTextTexture(fontSize, fontColor, repeat = false) {
   ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
   if (repeat) {
     ctx.translate(0.55 * texSize.width, -0.95 * rowHeight);
-    ctx.translate(0, 0.5 * rowHeight);
+    ctx.translate(0.25 * texSize.width, 0.5 * rowHeight);
     ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
-    ctx.translate(0.55 * texSize.width, -rowHeight);
+    ctx.translate(0.75 * texSize.width, -rowHeight);
     ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
   }
   ctx.restore();
