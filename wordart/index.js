@@ -5,15 +5,15 @@ const texLvs = [];
 let step = 0;
 
 const texLoader = new THREE.TextureLoader();
-const msg = "Hello darkness my old friend";
+const msg = "I am my own muse, the subject I know best.";
 const imageTexture = texLoader.load('assets/frida.jpg');
 const fontLoader = new FontFace('Babylonica', "url('assets/babylonica.ttf')");
 fontLoader.load().then((font) => {
   document.fonts.add(font);
 
-  texLvs[0] = createTextTexture(30, 1.3, '#999');
-  texLvs[1] = createTextTexture(18, 1.15, '#666');
-  texLvs[2] = createTextTexture(6, 1.25, '#333');
+  texLvs[0] = createTextTexture(60, '#aaa');
+  texLvs[1] = createTextTexture(24, '#999');
+  texLvs[2] = createTextTexture(8, '#333', true);
 
   document.getElementById('step').removeAttribute('disabled');
 });
@@ -84,6 +84,7 @@ uniform sampler2D lv3;
 ${helperFunctions}
 
 void main() {
+
   vec4 color = texture2D(tex, v_uv);
   vec3 asHsv = rgb2hsv(vec3(color));
   float grey = asHsv.z;
@@ -96,22 +97,25 @@ void main() {
   } else {
     gl_FragColor = texture2D(lv3, v_uv);
   }
+
 }
 `;
 
-function createTextTexture(fontSize, lineHeight, fontColor) {
+function createTextTexture(fontSize, fontColor, repeat = false) {
   const canvas = document.createElement("canvas");
   const sampleCtx = canvas.getContext('2d');
 
+  const lineHeight = 1.05;
   const vAlign = "top";
   const fontStyle = `${fontSize}px Babylonica`;
 
   sampleCtx.textBaseline = vAlign;
   sampleCtx.font = fontStyle;
-  const texSize = sampleCtx.measureText(`${msg} `);
+  const texSize = sampleCtx.measureText(`${msg}  `);
 
+  const rowHeight = fontSize * lineHeight;
   canvas.width = texSize.width;
-  canvas.height = fontSize * lineHeight;
+  canvas.height = rowHeight * 1.8;
 
   // We have to set the properties again after canvas changes size
   sampleCtx.textBaseline = vAlign;
@@ -134,9 +138,19 @@ function createTextTexture(fontSize, lineHeight, fontColor) {
   const pattern = ctx.createPattern(canvas, 'repeat');
   ctx.fillStyle = pattern;
   ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
+  ctx.translate(-0.55 * texSize.width, 0.95 * rowHeight);
+  ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
+  if (repeat) {
+    ctx.translate(0.55 * texSize.width, -0.95 * rowHeight);
+    ctx.translate(0, 0.5 * rowHeight);
+    ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
+    ctx.translate(0.55 * texSize.width, -rowHeight);
+    ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
+  }
   ctx.restore();
 
   const texture = new THREE.Texture(canvas2d);
+
   texture.minFilter = THREE.LinearFilter;
   texture.needsUpdate = true;
   return texture;
