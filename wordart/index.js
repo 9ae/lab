@@ -1,19 +1,19 @@
-const width = 300; //window.innerWidth;
-const height = 423; //window.innerHeight;
+const width = 300;
+const height = 423;
 let scene, camera, renderer, mesh;
 const texLvs = [];
 let step = 0;
 
 const texLoader = new THREE.TextureLoader();
+const msg = "Hello darkness my old friend";
 const imageTexture = texLoader.load('assets/frida.jpg');
-
 const fontLoader = new FontFace('Babylonica', "url('assets/babylonica.ttf')");
 fontLoader.load().then((font) => {
   document.fonts.add(font);
 
-  texLvs[0] = createTextTexture(drawText(50, 1.5));
-  texLvs[1] = createTextTexture(drawText(20, 1.2));
-  texLvs[2] = createTextTexture(drawText(6, 1.0), false);
+  texLvs[0] = createTextTexture(30, 1.3, '#999');
+  texLvs[1] = createTextTexture(18, 1.15, '#666');
+  texLvs[2] = createTextTexture(6, 1.25, '#333');
 
   document.getElementById('step').removeAttribute('disabled');
 });
@@ -99,25 +99,26 @@ void main() {
 }
 `;
 
-function drawText(fontSize, lineHeight) {
-  const tempCanvas = document.createElement("canvas");
-  const ctx = tempCanvas.getContext('2d');
+function createTextTexture(fontSize, lineHeight, fontColor) {
+  const canvas = document.createElement("canvas");
+  const sampleCtx = canvas.getContext('2d');
 
-  const msg = "Hello darkness my old friend";
-  ctx.textBaseline = "top";
-  ctx.font = `${fontSize}px serif`;
-  const texSize = ctx.measureText(`${msg} `);
-  tempCanvas.width = texSize.width;
-  tempCanvas.height = fontSize * lineHeight;
-  ctx.textBaseline = "top";
-  ctx.font = `${fontSize}px Babylonica`;
-  ctx.fillStyle = "#666";
-  ctx.fillText(msg, 0, 0);
+  const vAlign = "top";
+  const fontStyle = `${fontSize}px Babylonica`;
 
-  return tempCanvas;
-}
+  sampleCtx.textBaseline = vAlign;
+  sampleCtx.font = fontStyle;
+  const texSize = sampleCtx.measureText(`${msg} `);
 
-function createTextTexture(canvas, repeat = false) {
+  canvas.width = texSize.width;
+  canvas.height = fontSize * lineHeight;
+
+  // We have to set the properties again after canvas changes size
+  sampleCtx.textBaseline = vAlign;
+  sampleCtx.font = fontStyle;
+  sampleCtx.fillStyle = fontColor;
+  sampleCtx.fillText(msg, 0, 0);
+
   const canvas2d = document.createElement("canvas");
   canvas2d.width = width;
   canvas2d.height = height;
@@ -126,17 +127,13 @@ function createTextTexture(canvas, repeat = false) {
 
   ctx.save();
   ctx.translate(0.5 * sz, 0.5 * sz);
-  ctx.rotate(Math.PI * -0.25);
+  ctx.rotate(Math.PI * -0.15);
   ctx.translate(-0.5 * sz, -0.5 * sz);
   ctx.fillStyle = "#ddd";
   ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
   const pattern = ctx.createPattern(canvas, 'repeat');
   ctx.fillStyle = pattern;
   ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
-  if (repeat) {
-    ctx.translate(0.5 * canvas.width, 0.5 * canvas.height);
-    ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
-  }
   ctx.restore();
 
   const texture = new THREE.Texture(canvas2d);
