@@ -1,0 +1,39 @@
+<html>
+
+<head>
+  <title>Word art w/ 9ae</title>
+  <style type="text/css">
+    body {
+      margin: 0;
+      background: #000;
+    }
+
+    #three {
+      display: block;
+      margin: 20px auto;
+      border: #ddd 4px solid;
+
+    }
+
+    #controls {
+      position: fixed;
+      left: 0;
+      bottom: 20px;
+      z-index: 500;
+      width: 100%;
+
+    }
+  </style>
+  <script type="application/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script type="application/javascript" src="index.js"></script>
+</head>
+
+<body>
+  <canvas id="three"></canvas>
+  <div id="controls">
+    <input type="range" id="step" min="0" max="3" value="0" disabled onChange="onStepChange(this.value)">
+  </div>
+</body>
+
+</html>
