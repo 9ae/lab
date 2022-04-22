@@ -18,7 +18,7 @@ const Pure = () => {
     const canvasWrapper = mountRef.current;
     if (!canvasWrapper) return;
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xfbfaf8);
+    scene.background = new THREE.Color(0x221144);
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -26,12 +26,12 @@ const Pure = () => {
 
     scene.add(new THREE.AmbientLight(0xffeeff));
 
-    const bufferScene = new THREE.Scene();
-    bufferScene.add(new THREE.AmbientLight(0xffffff));
-    bufferScene.background = new THREE.Color(0xeeeeff);
+    //const bufferScene = new THREE.Scene();
+    // scene.add(new THREE.AmbientLight(0xffffff));
+
     const ptLight = new THREE.PointLight(0xeeffee, 0.5, 100);
     ptLight.position.set(0, 0, 0);
-    bufferScene.add(ptLight);
+    scene.add(ptLight);
 
     const bufferTexture = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter });
 
@@ -47,38 +47,63 @@ const Pure = () => {
     const axesHelper = new THREE.AxesHelper(5);
     scene.add(axesHelper);
     const helper = new THREE.CameraHelper(camera);
-    scene.add(helper);
-    */
+    scene.add(helper); */
+    const gridHelper = new THREE.GridHelper(50, 10);
+    scene.add(gridHelper);
+
 
     /* Scene objects */
 
     const colors = [0xFDABAB, 0xFDC9AB, 0xFDEBAB, 0xE3FDAB, 0xACFDB3, 0xACF3FC, 0xACC2FC, 0xC1ABFC, 0xFDABEA].map(color => (new THREE.MeshPhongMaterial({ color, specular: 0x009900, shininess: 30, flatShading: true })));
 
     // add plane
-    const geomPlane = new THREE.PlaneBufferGeometry(5, 5);
+    const geomPlane = new THREE.PlaneBufferGeometry(10, 10);
     const portal1 = new THREE.Mesh(geomPlane, new THREE.MeshBasicMaterial({ map: bufferTexture.texture, side: THREE.DoubleSide }));
-    portal1.position.z = 10;
+    portal1.position.z = 5;
     scene.add(portal1);
+
+    const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xeeffee, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
+
+    const topSide = new THREE.Mesh(geomPlane, wallMaterial);
+    topSide.rotateX(Math.PI / 2);
+    topSide.position.y = 5
+    scene.add(topSide);
+
+    const leftSide = new THREE.Mesh(geomPlane, wallMaterial);
+    leftSide.rotateY(Math.PI / 2);
+    leftSide.position.x = 5;
+    scene.add(leftSide);
+
+    const backSide = new THREE.Mesh(geomPlane, wallMaterial);
+    backSide.position.z = -5;
+    scene.add(backSide);
+
 
     // place camera
     // const controls = new OrbitControls(camera, renderer.domElement);
     camera.position.x = 0;
     camera.position.y = 0;
     camera.position.z = 0;
-    camera.lookAt(0, 0, 20);
+    camera.lookAt(0, 0, 5);
     camera.updateProjectionMatrix();
     //  controls.update();
 
     // place geom
-    const geomTetra = new THREE.TetrahedronGeometry();
-    const shape1 = new THREE.Mesh(geomTetra, colors[0]);
-    shape1.position.y = 50;
-    bufferScene.add(shape1);
-    //  scene.add(shape1);
+    const topShape = new THREE.Mesh(new THREE.IcosahedronGeometry(), colors[0]);
+    topShape.position.y = 50;
+    scene.add(topShape);
+
+    const leftShape = new THREE.Mesh(new THREE.OctahedronGeometry(), colors[3]);
+    leftShape.position.x = 50;
+    scene.add(leftShape);
+
+    const backShape = new THREE.Mesh(new THREE.IcosahedronGeometry(), colors[6]);
+    backShape.position.z = -50;
+    scene.add(backShape);
 
     // place secondary camera
     const portal1Camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    portal1Camera.position.y = 40;
+    portal1Camera.position.y = 20;
     portal1Camera.lookAt(0, 50, 0);
     portal1Camera.updateProjectionMatrix();
 
@@ -108,11 +133,11 @@ const Pure = () => {
     const animate = () => {
       //  controls.update();
 
-      shape1.rotation.x += 0.01;
-      shape1.rotation.z += 0.01;
+      topShape.rotation.x += 0.01;
+      topShape.rotation.z += 0.01;
 
       renderer.setRenderTarget(bufferTexture);
-      renderer.render(bufferScene, portal1Camera);
+      renderer.render(scene, portal1Camera);
       renderer.setRenderTarget(null);
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
