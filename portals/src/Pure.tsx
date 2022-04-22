@@ -30,7 +30,7 @@ const Pure = () => {
     bufferScene.add(new THREE.AmbientLight(0xffffff));
     bufferScene.background = new THREE.Color(0xeeeeff);
     const ptLight = new THREE.PointLight(0xeeffee, 0.5, 100);
-    ptLight.position.set(0, 20, 0);
+    ptLight.position.set(0, 0, 0);
     bufferScene.add(ptLight);
 
     const bufferTexture = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter });
@@ -72,23 +72,30 @@ const Pure = () => {
     // place geom
     const geomTetra = new THREE.TetrahedronGeometry();
     const shape1 = new THREE.Mesh(geomTetra, colors[0]);
-    shape1.position.z = -20;
+    shape1.position.y = 50;
     bufferScene.add(shape1);
+    //  scene.add(shape1);
 
     // place secondary camera
     const portal1Camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    portal1Camera.position.z = -10;
-    portal1Camera.lookAt(0, 0, -20);
+    portal1Camera.position.y = 40;
+    portal1Camera.lookAt(0, 50, 0);
     portal1Camera.updateProjectionMatrix();
 
     // controls
     document.addEventListener('keydown', function (evt: KeyboardEvent) {
       switch (evt.code) {
         case "ArrowLeft":
-          camera.rotation.y += -0.01 * Math.PI;
+          camera.rotation.y -= 0.01 * Math.PI;
           break;
         case "ArrowRight":
           camera.rotation.y += 0.01 * Math.PI;
+          break;
+        case "ArrowUp":
+          camera.rotation.x += 0.01 * Math.PI;
+          break;
+        case "ArrowDown":
+          camera.rotation.x -= 0.01 * Math.PI;
           break;
         default:
           console.log(`Unhandled key ${evt.code}`);
