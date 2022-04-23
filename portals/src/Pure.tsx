@@ -5,11 +5,34 @@ import React, { useEffect, useRef } from "react";
 const Pure = () => {
 
   const mountRef = useRef<HTMLDivElement>(null);
-  const objectPos = 40;
+  const objectPos = 25;
   const sideSize = 10;
   const cameraPos = 12;
   const cameraFOV = 20;
-  const cameraFar = 500;
+  const cameraNear = 0.3;
+  const cameraFar = 1500;
+
+  const vertexShader = `
+  attribute float size;
+    varying vec3 vColor;
+
+    void main() {
+
+      vColor = color;
+      vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+      gl_PointSize = size * ( 300.0 / -mvPosition.z );
+      gl_Position = projectionMatrix * mvPosition;
+
+    }
+  `;
+
+  const fragmentShader = `
+			varying vec3 vColor;
+
+			void main() {
+				gl_FragColor = vec4( vColor, 1.0 );
+			}
+  `;
 
   useEffect(() => {
     /* Setup */
@@ -48,6 +71,45 @@ const Pure = () => {
     */
 
     /* Scene objects */
+
+    const texLoader = new THREE.TextureLoader();
+    const groundTexture = texLoader.load('tex/moonmap1k.jpeg');
+    const ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000),
+      new THREE.MeshBasicMaterial({ map: groundTexture, side: THREE.FrontSide }))
+    ground.position.set(0, -sideSize, 0);
+    ground.rotateX(Math.PI / -2);
+    scene.add(ground);
+
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    const colors = [];
+    const sizes = [];
+    const color = new THREE.Color();
+    for (let i = 0; i < 10000; i++) {
+
+      const x = 2000 * Math.random() - 1000;
+      const y = 1000 * Math.random() + objectPos * 2;
+      const z = 2000 * Math.random() - 1000;
+      vertices.push(x, y, z);
+
+      color.setHSL(Math.random(), 0.6, 0.9);
+      colors.push(color.r, color.g, color.b);
+
+      sizes.push(Math.floor(Math.random() * 3));
+
+    }
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+    const starsMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      depthTest: false,
+      transparent: true,
+      vertexColors: true
+    });
+    const particles = new THREE.Points(geometry, starsMaterial);
+    scene.add(particles);
 
     const rainbowMaterial = [0xFDABAB,
       0xFDC9AB, //1
@@ -162,7 +224,7 @@ const Pure = () => {
     const topLight = new THREE.PointLight(0xddddaa, 0.02);
     topLight.position.set(0, cameraPos, 0);
     scene.add(topLight);
-    const bottomCamera = new THREE.PerspectiveCamera(cameraFOV, ar, 0.3, cameraFar);
+    const bottomCamera = new THREE.PerspectiveCamera(cameraFOV, ar, cameraNear, cameraFar);
     bottomCamera.position.y = cameraPos;
     bottomCamera.lookAt(topShape.position);
     bottomCamera.updateProjectionMatrix();
@@ -173,7 +235,7 @@ const Pure = () => {
     const leftLight = new THREE.PointLight(0xddddaa, 0.02);
     leftLight.position.set(cameraPos, 0, 0);
     scene.add(leftLight)
-    const rightCamera = new THREE.PerspectiveCamera(cameraFOV, ar, 0.3, cameraFar);
+    const rightCamera = new THREE.PerspectiveCamera(cameraFOV, ar, cameraNear, cameraFar);
     rightCamera.position.x = cameraPos;
     rightCamera.lookAt(leftShape.position);
     rightCamera.updateProjectionMatrix();
@@ -184,7 +246,7 @@ const Pure = () => {
     const backLight = new THREE.PointLight(0xddddaa, 0.02);
     backLight.position.set(0, 0, cameraPos);
     scene.add(backLight)
-    const frontCamera = new THREE.PerspectiveCamera(cameraFOV, ar, 0.3, cameraFar);
+    const frontCamera = new THREE.PerspectiveCamera(cameraFOV, ar, cameraNear, cameraFar);
     frontCamera.position.z = -cameraPos;
     frontCamera.lookAt(backShape.position);
     frontCamera.updateProjectionMatrix();
