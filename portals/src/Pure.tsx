@@ -74,10 +74,10 @@ const Pure = () => {
 
     const texLoader = new THREE.TextureLoader();
     const groundTexture = texLoader.load('tex/moonmap1k.jpeg');
-    const ground = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000),
-      new THREE.MeshBasicMaterial({ map: groundTexture, side: THREE.FrontSide }))
-    ground.position.set(0, -sideSize, 0);
-    ground.rotateX(Math.PI / -2);
+    const ground = new THREE.Mesh(new THREE.SphereGeometry(100),
+      new THREE.MeshBasicMaterial({ map: groundTexture, side: THREE.FrontSide }));
+    ground.position.set(0, -120, 0);
+    ground.rotateX(Math.PI / 2);
     scene.add(ground);
 
     const geometry = new THREE.BufferGeometry();
