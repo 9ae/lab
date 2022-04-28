@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import Pure from './Pure';
+import PortalCube from './PortalCube';
+import ShaderWords from './ShaderWords';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -13,7 +14,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Pure />} />
+        <Route path="/" element={<App />} />
+        <Route path="/portalcube" element={<PortalCube />} />
+        <Route path="/shaderwords" element={<ShaderWords />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
