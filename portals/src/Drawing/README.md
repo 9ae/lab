@@ -3,7 +3,8 @@
 # Create a drawing canvas with a redo & undo stack
 
 - [x] Make drawing canvas
-- [ ] Implement redo undo stack
+- [x] Implement redo undo stack
+- [ ] Detech undo/redo via touch events
 
 # Our command stack
 
