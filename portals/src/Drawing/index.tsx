@@ -58,6 +58,11 @@ const Page = () => {
     //  console.log('touch start', evt)
     if (ctx && evt.touches.length > 0) {
       const finger = evt.touches[0];
+
+      if (commandIndex < commands.length - 1) {
+        setCommands(commands.slice(0, commandIndex + 1));
+      }
+
       ctx.beginPath();
       ctx.moveTo(finger.clientX, finger.clientY);
       ctx.strokeStyle = 'blue';

@@ -5,7 +5,7 @@
 - [x] Make drawing canvas
 - [x] Implement redo undo stack
 - [ ] Detech undo/redo via touch events
-- [ ] Overwrite on new command when in the middle of a stack
+- [x] Overwrite on new command when in the middle of a stack
 
 # Our command stack
 
