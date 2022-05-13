@@ -13,7 +13,7 @@ How do we implement our command stack?
 Option 1:
 i = n-1
 [....(.).]
-
+ 
 Option 2:
 history: [..]
 future: [..]
