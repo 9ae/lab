@@ -8,6 +8,8 @@ import Drawing from './Drawing';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import './index.css';
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
