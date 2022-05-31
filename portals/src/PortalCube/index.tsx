@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import React, { useEffect, useRef } from "react";
+import { Object3D } from 'three';
 
 const Pure = () => {
 
@@ -79,6 +81,8 @@ const Pure = () => {
     ground.position.set(0, -120, 0);
     ground.rotateX(Math.PI / 2);
     scene.add(ground);
+
+    const meshLoader = new GLTFLoader();
 
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
@@ -229,15 +233,23 @@ const Pure = () => {
     bottomCamera.lookAt(topShape.position);
     bottomCamera.updateProjectionMatrix();
 
-    const leftShape = new THREE.Mesh(new THREE.OctahedronGeometry(), rainbowMaterial[4]);
-    leftShape.position.x = objectPos;
-    scene.add(leftShape);
-    const leftLight = new THREE.PointLight(0xddddaa, 0.02);
-    leftLight.position.set(cameraPos, 0, 0);
-    scene.add(leftLight)
+    let pikachu: THREE.Object3D<THREE.Event> | undefined;
+    /* Model by Raghav Gupta: https://sketchfab.com/raghav-wd */
+    meshLoader.load('pikachu/source/pikachu2.glb', (gltf) => {
+      console.log('file loaded', gltf)
+      pikachu = gltf.scene.children.find(o => o.name === "Pikachu");
+      if (pikachu) {
+        scene.add(pikachu);
+        pikachu.scale.set(0.25, 0.25, 0.25);
+        pikachu.position.set(1.5 * cameraPos, -0.5 * sideSize, 0);
+        pikachu.rotateZ(Math.PI / 2);
+      }
+
+    });
     const rightCamera = new THREE.PerspectiveCamera(cameraFOV, ar, cameraNear, cameraFar);
     rightCamera.position.x = cameraPos;
-    rightCamera.lookAt(leftShape.position);
+    rightCamera.position.y = sideSize * 10;
+    rightCamera.lookAt(cameraPos, -0.5 * sideSize, 0);
     rightCamera.updateProjectionMatrix();
 
     const backShape = new THREE.Mesh(new THREE.IcosahedronGeometry(), rainbowMaterial[7]);
@@ -284,11 +296,12 @@ const Pure = () => {
       topShape.rotation.x += 0.01;
       topShape.rotation.y -= 0.01;
 
-      leftShape.rotation.y += 0.01;
-      leftShape.rotation.z -= 0.01;
-
       backShape.rotation.z += 0.01;
       backShape.rotation.x -= 0.01;
+
+      if (pikachu) {
+        pikachu.rotation.z += 0.01;
+      }
 
       R.setRenderTarget(frontBuffer);
       R.render(scene, frontCamera);
