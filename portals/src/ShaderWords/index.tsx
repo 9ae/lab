@@ -7,7 +7,7 @@ const imageWidth = 300;
 const imageHeight = 423;
 const msg = "I am my own muse, the subject I know best.";
 
-function createTextTexture(fontSize: number, fontColor: string, repeat = false) {
+function createTextTexture(fontSize: number, fontColor: string, angle = 0, repeat = false) {
   const canvas = document.createElement("canvas");
   const sampleCtx = canvas.getContext('2d');
   if (sampleCtx === null) { throw Error("can't create canvas context"); }
@@ -38,7 +38,7 @@ function createTextTexture(fontSize: number, fontColor: string, repeat = false) 
   if (ctx === null) { throw Error("can't create canvas context"); }
   ctx.save();
   ctx.translate(0.5 * sz, 0.5 * sz);
-  ctx.rotate(Math.PI * 0.1);
+  ctx.rotate((Math.PI * angle) / 180);
   ctx.translate(-0.5 * sz, -0.5 * sz);
   ctx.fillStyle = "#ddd";
   ctx.fillRect(-sz, -sz, 3 * sz, 3 * sz);
@@ -92,18 +92,21 @@ const Page = () => {
   const fontLoader = new FontFace('Babylonica', "url('fonts/babylonica.ttf')");
   const [font, setFont] = useState<FontContextType>(fontDefault);
   const [step, setStep] = useState<number>(0);
+  const [angle, setAngle] = useState<number>(0);
+
+  const createTextTextures = () => {
+    const levels: Texture[] = [
+      createTextTexture(60, '#aaa', angle),
+      createTextTexture(24, '#999', angle),
+      createTextTexture(8, '#333', angle, true)
+    ]
+    setFont({ isLoaded: true, levels });
+  };
 
   if (!font.isLoaded) {
     fontLoader.load().then((font) => {
-      console.log('font loaded');
       document.fonts.add(font);
-      const levels: Texture[] = [
-        createTextTexture(60, '#aaa'),
-        createTextTexture(24, '#999'),
-        createTextTexture(8, '#333', true)
-      ]
-      // TODO create textures
-      setFont({ isLoaded: true, levels });
+      createTextTextures();
     });
   }
 
@@ -111,6 +114,12 @@ const Page = () => {
     const value = parseInt(evt.target.value);
     setStep(value);
   };
+
+  const onAngleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(evt.target.value);
+    setAngle(value);
+    createTextTextures();
+  }
 
   return (<FontContext.Provider value={font}>
     <div style={styles.wrapper}>
@@ -124,6 +133,7 @@ const Page = () => {
         </div>
         <input type="range" min="0" max="3" value={step} disabled={!font.isLoaded} onChange={onStepChanged} style={styles.step} />
       </div>
+      <input type="range" min="9" max="359" value={angle} onChange={onAngleChange} />
     </div>
   </FontContext.Provider >);
 };
