@@ -133,7 +133,10 @@ const Page = () => {
         </div>
         <input type="range" min="0" max="3" value={step} disabled={!font.isLoaded} onChange={onStepChanged} style={styles.step} />
       </div>
-      <input type="range" min="9" max="359" value={angle} onChange={onAngleChange} />
+      <div style={{ display: "flex", justifyContent: "flex-start", flexDirection: "row", alignItems: "center" }}>
+        <label htmlFor="angle" style={{ ...styles.stepLabels, width: "fit-content" }}>Angle</label>
+        <input type="range" id="angle" min="9" max="359" value={angle} onChange={onAngleChange} disabled={step < 3} />
+      </div>
     </div>
   </FontContext.Provider >);
 };
